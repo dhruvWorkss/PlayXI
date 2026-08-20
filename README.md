@@ -1,147 +1,74 @@
-# 🏏 PlayXI — AI Powered Dream11 Team Optimizer
+# PlayXI — Data-backed IPL Fantasy XI Assistant
 
-> Built with Python, Streamlit, and Llama 3 AI — picks your best Dream11 XI using head-to-head analysis, team form, and fantasy points prediction.
+PlayXI processes 278,000+ IPL ball-by-ball records (2008–3 June 2025), calculates recent player fantasy form, and selects a balanced XI from two user-confirmed squads.
 
-![Python](https://img.shields.io/badge/Python-3.13-blue)
-![Streamlit](https://img.shields.io/badge/Streamlit-1.0-red)
-![AI](https://img.shields.io/badge/AI-Llama%203-green)
-![IPL](https://img.shields.io/badge/IPL-2026-orange)
+## Live demo
 
----
+[Open PlayXI](https://playxi-ipl.streamlit.app/)
 
-## 🚀 What is PlayXI?
+## What it does
 
-PlayXI is an AI-powered fantasy cricket team optimizer that helps you pick the best 11 players for Dream11. It combines:
+- Cleans raw delivery data and removes duplicate records.
+- Builds match-level batting and bowling fantasy features.
+- Uses each player's previous five appearances as a transparent prediction baseline.
+- Shows real head-to-head results and recent team scores from the local dataset.
+- Selects exactly 11 players while enforcing a maximum of seven from one team and minimum batting/bowling coverage.
+- Assigns captain and vice-captain from the two highest projections.
 
-- **Real IPL data** — 278,000+ ball-by-ball records from 2008-2026
-- **Head to head analysis** — which team has won more of the last 5 meetings
-- **Team form analysis** — is a team scoring big or getting bowled out cheaply?
-- **Fantasy points prediction** — calculates each player's last 5 match fantasy points
-- **Llama 3 AI** — reasons about all factors and picks the optimal team
+The application does not claim access to live fixtures or invent missing statistics with an LLM. Update the dataset and choose the confirmed playing XIs before relying on a recommendation.
 
----
-
-## 🧠 How It Works
-User enters today's Playing 11
-↓
-AI analyses Head to Head record
-↓
-AI analyses recent Team Form
-↓
-Calculates Fantasy Points for last 5 matches
-↓
-Picks best 11 players + Captain + Vice Captain
-↓
-Shows detailed analysis and reasoning
-
----
-
-## 🎯 Features
-
-- ✅ Enter today's actual playing 11 for accurate predictions
-- ✅ Head to head win/loss analysis for last 5 meetings
-- ✅ Team batting/bowling form — picks more bowlers if a team is getting bowled out
-- ✅ Fantasy points calculated using official Dream11 scoring rules
-- ✅ Captain = player with highest predicted fantasy points
-- ✅ Vice Captain = player with second highest predicted fantasy points
-- ✅ Follows all Dream11 rules (min 3 batsmen, min 3 bowlers, max 7 from one team)
-
----
-
-## 🛠️ Tech Stack
-
-| Technology | Purpose |
-|---|---|
-| Python | Core programming language |
-| Pandas & NumPy | Data processing and feature engineering |
-| Scikit-learn | Machine learning model (Random Forest) |
-| Streamlit | Web application UI |
-| Groq + Llama 3 | AI reasoning and team selection |
-| PuLP | Linear programming for team optimization |
-| Pickle | Model serialization |
-
----
-
-## 📊 Dataset
-
-- **Source:** Cricsheet.org (open cricket data)
-- **Size:** 278,205 ball-by-ball records
-- **Coverage:** IPL 2008 to 2025
-- **Files:** deliveries.csv + matches.csv
-
----
-
-## ⚙️ Installation
+## Run locally
 
 ```bash
-# Clone the repository
 git clone https://github.com/dhruvWorkss/PlayXI.git
 cd PlayXI
-
-# Install dependencies
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+# macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
-
-# Add your API keys to .env file
-GROQ_API_KEY=your_groq_api_key_here
-
-# Run the app
 streamlit run app/app.py
 ```
 
----
+## Rebuild derived player features
 
-## 🔑 API Keys Required
+```bash
+python -m src.pipeline
+```
 
-- **Groq API** (free) — [console.groq.com](https://console.groq.com)
+This writes `data/player_features.csv`. The Streamlit app builds the same features from source data and caches them for the session.
 
----
+## Test
 
-## 📁 Project Structure
+```bash
+python -m unittest discover -s tests -v
+```
+
+## Project structure
+
+```text
 PlayXI/
-├── app/
-│   └── app.py              ← Streamlit web app
-├── data/
-│   ├── deliveries_updated_ipl_upto_2025.csv
-│   ├── matches_updated_ipl_upto_2025.csv
-│   ├── batsman_stats.csv
-│   └── bowler_stats.csv
-├── notebooks/
-│   ├── data_cleaning.ipynb
-│   └── 03_ml_model.ipynb
-├── src/
-│   ├── batsman_model.pkl
-│   └── bowler_model.pkl
-├── .env                    ← API keys (not committed)
-├── .gitignore
-└── README.md
----
+├── app/app.py               # Streamlit application
+├── data/                    # Raw and derived IPL data
+├── notebooks/               # Exploratory cleaning/model experiments
+├── src/pipeline.py          # Reusable feature and optimization logic
+├── tests/test_pipeline.py   # Optimizer tests
+└── requirements.txt
+```
 
-## 🏏 How to Use
+## Method and limitations
 
-1. Open the app with `streamlit run app/app.py`
-2. Select Team 1 and Team 2 from the dropdowns
-3. Enter today's playing 11 for both teams (copy from Dream11 or any cricket website)
-4. Click **Generate AI Best XI**
-5. PlayXI shows you the best team with captain, vice captain and analysis!
+The current predictor is deliberately simple: a rolling five-appearance fantasy-points average. It is an interpretable baseline, not a guarantee. Roles are inferred from historical participation. Current player prices, injuries, venue, toss, weather, and matches after 3 June 2025 are not included.
 
----
+## Next engineering milestones
 
-## 📈 Future Improvements
+- Add authoritative squad/role/credit metadata.
+- Use chronological backtesting and compare models against the rolling baseline.
+- Add venue, opponent, and recency-weighted features.
+- Add a scheduled ingestion job and PostgreSQL serving layer.
+- Add integration tests and deploy the Streamlit application.
 
-- [ ] Automatic playing 11 scraping from live sources
-- [ ] Live IPL 2026 match data integration
-- [ ] Player injury and availability tracking
-- [ ] Multiple team suggestions for different strategies
-- [ ] Performance tracking — compare predictions vs actual results
+## Tech
 
----
+Python · Pandas · Streamlit
 
-## 👨‍💻 Built By
-
-**Dhruv** — Final year AI & Data Science student at CMRIT Bangalore
-
-Connect with me on [GitHub](https://github.com/dhruvWorkss)
-
----
-
-*PlayXI — Where Data Meets Cricket Intelligence* 🏏
+Data source: [Cricsheet](https://cricsheet.org/)
