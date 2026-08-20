@@ -2,6 +2,10 @@
 
 PlayXI processes 278,000+ IPL ball-by-ball records (2008–3 June 2025), calculates recent player fantasy form, and selects a balanced XI from two user-confirmed squads.
 
+## Live demo
+
+[Open PlayXI](https://playxi-ipl.streamlit.app/)
+
 ## What it does
 
 - Cleans raw delivery data and removes duplicate records.
